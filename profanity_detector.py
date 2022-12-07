@@ -1,5 +1,6 @@
 """Contains ProfanityDetector class to detect profanity in a string or a list of strings."""
 
+
 class ProfanityDetector:
     """
     Detects profanity in a string or a list of strings.
@@ -11,12 +12,12 @@ class ProfanityDetector:
             A list of sentences to be checked for profanity.
         metric: str
             An evaluation metric for degree of profanity.
-                simple (Default): Ratio of number of tokens containing racial slurs to all the whitespace seperated tokens in the sentence.
-                charprof: Ratio of Number of total characters used by racial slurs to total number of characters (excluding whitespaces) in the sentence.
-                binary: Returns 1 if there is profanity in the sentence otherwise 0.
+                simple: Ratio of number of tokens containing racial slurs to all the tokens in the sentence.
+                charprof: Ratio of Number of total characters used by racial slurs to total number of characters total number of characters all the tokens used in the sentence.
+                binary (Default): Returns 1 if there is profanity in the sentence otherwise 0.
     """
 
-    def __init__(self, tokens, sentences=None, metric='simple'):
+    def __init__(self, tokens, sentences=None, metric='binary'):
         self.sentences = sentences
         self.tokens = tokens
         self.metric = metric
@@ -28,16 +29,16 @@ class ProfanityDetector:
         Parameters:
             sentence: str
                 A string to normalize.
-        
+
         Returns:
             sentence: str
                 The normalized string.
         """
         sentence = sentence.lower()
-        #Cast every token to lowercase
+        # Cast every token to lowercase
         self.tokens = [token.lower() for token in self.tokens]
         return sentence
-    
+
     def tokenize(self, sentence):
         """
         Tokenizes a string. Uses whitespace as default seperator.
@@ -50,7 +51,7 @@ class ProfanityDetector:
             sentence: str
                 The tokenized string.
         """
-        #splitting about whitespaces
+        # splitting about whitespaces
         sentence_tokens = sentence.split()
         return sentence_tokens
 
@@ -67,7 +68,7 @@ class ProfanityDetector:
                 The number of tokens containing racial slurs.
         """
         match_count = 0
-        #if any slur is found in a sentence_token match_count is incremented by 1
+        # if any slur is found in a sentence_token match_count is incremented by 1
         if self.metric == 'simple':
             for sentence_token in sentence_tokens:
                 match_count += any(token in sentence_token for token in self.tokens)
@@ -90,7 +91,7 @@ class ProfanityDetector:
         Parameters:
             sentence: str
                 sentence to be checked for profanity.
-        
+
         Returns:
             profanity_score: float
                 A float rounded to 2 decimal places denoting the profanity score.
@@ -105,7 +106,6 @@ class ProfanityDetector:
         elif self.metric == 'binary':
             return match_count
 
-
     def get_scores(self):
         """
         Get profanity scores for all the sentences in a list (only valid with sentences is set during initialization).
@@ -115,7 +115,9 @@ class ProfanityDetector:
                 A list of profanity scores corresponding to each sentences.
         """
         if self.sentences is None:
-            raise Exception('''Cannot call get_scores if the object is not initialized with a list of sentences\n
+            raise Exception('''Cannot call get_scores if the object is not initialized
+            with a list of sentences\n
             Try calling profanity_score(sentence)''')
-        scores = [self.profanity_score(sentence) for sentence in self.sentences]
+        scores = [self.profanity_score(sentence)
+                  for sentence in self.sentences]
         return scores

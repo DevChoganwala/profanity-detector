@@ -10,5 +10,5 @@ if __name__ == '__main__':
     with open("slurs.txt", "r", encoding='UTF-8') as slurs_file:
         slurs = slurs_file.read().splitlines()
     
-    detector = ProfanityDetector(slurs, sentences, 'charprof')
+    detector = ProfanityDetector(slurs, sentences, 'binary')
     print(detector.get_scores())

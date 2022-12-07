@@ -13,6 +13,7 @@ class ProfanityDetector:
             An evaluation metric for degree of profanity.
                 simple (Default): Ratio of number of tokens containing racial slurs to all the whitespace seperated tokens in the sentence.
                 charprof: Ratio of Number of total characters used by racial slurs to total number of characters (excluding whitespaces) in the sentence.
+                binary: Returns 1 if there is profanity in the sentence otherwise 0.
     """
 
     def __init__(self, tokens, sentences=None, metric='simple'):
@@ -75,6 +76,11 @@ class ProfanityDetector:
                 for sentence_token in sentence_tokens:
                     if token in sentence_token:
                         match_count += len(token)
+        elif self.metric == 'binary':
+            for sentence_token in sentence_tokens:
+                if any(token in sentence_token for token in self.tokens):
+                    match_count = 1
+                    break
         return match_count
 
     def profanity_score(self, sentence):
@@ -96,6 +102,8 @@ class ProfanityDetector:
             return round(match_count/len(sentence_tokens), 2)
         elif self.metric == 'charprof':
             return round(match_count/sum(len(token) for token in sentence_tokens), 2)
+        elif self.metric == 'binary':
+            return match_count
 
 
     def get_scores(self):

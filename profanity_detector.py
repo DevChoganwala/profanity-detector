@@ -9,11 +9,16 @@ class ProfanityDetector:
             A list of words considered to be racial slurs.
         sentences: list of str, optional
             A list of sentences to be checked for profanity.
+        metric: str
+            An evaluation metric for degree of profanity.
+                simple (Default): Ratio of number of tokens containing racial slurs to all the whitespace seperated tokens in the sentence.
+                charprof: Ratio of Number of total characters used by racial slurs to total number of characters (excluding whitespaces) in the sentence.
     """
 
-    def __init__(self, tokens, sentences=None):
+    def __init__(self, tokens, sentences=None, metric='simple'):
         self.sentences = sentences
         self.tokens = tokens
+        self.metric = metric
 
     def normalize(self, sentence):
         """
@@ -62,8 +67,14 @@ class ProfanityDetector:
         """
         match_count = 0
         #if any slur is found in a sentence_token match_count is incremented by 1
-        for sentence_token in sentence_tokens:
-            match_count += any(token in sentence_token for token in self.tokens)
+        if self.metric == 'simple':
+            for sentence_token in sentence_tokens:
+                match_count += any(token in sentence_token for token in self.tokens)
+        elif self.metric == 'charprof':
+            for token in self.tokens:
+                for sentence_token in sentence_tokens:
+                    if token in sentence_token:
+                        match_count += len(token)
         return match_count
 
     def profanity_score(self, sentence):
@@ -81,7 +92,11 @@ class ProfanityDetector:
         sentence = self.normalize(sentence)
         sentence_tokens = self.tokenize(sentence)
         match_count = self.match_tokens(sentence_tokens)
-        return round(match_count/len(sentence_tokens), 2)
+        if self.metric == 'simple':
+            return round(match_count/len(sentence_tokens), 2)
+        elif self.metric == 'charprof':
+            return round(match_count/sum(len(token) for token in sentence_tokens), 2)
+
 
     def get_scores(self):
         """

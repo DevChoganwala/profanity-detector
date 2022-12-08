@@ -68,8 +68,8 @@ class ProfanityDetector:
                 The number of tokens containing racial slurs.
         """
         match_count = 0
-        # if any slur is found in a sentence_token match_count is incremented by 1
         if self.metric == 'simple':
+            # if any slur is found in a sentence_token match_count is incremented by 1
             for sentence_token in sentence_tokens:
                 match_count += any(token in sentence_token for token in self.tokens)
         elif self.metric == 'charprof':
